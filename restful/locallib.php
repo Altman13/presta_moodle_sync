@@ -24,9 +24,13 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+use Curl\Curl;
+use Curl\MultiCurl;   
 require_once("$CFG->dirroot/webservice/lib.php");
-
+require_once("classes/php-curl-class/vendor/autoload.php");
+//$curl = new Curl();
+// var_dump($curl);
+// die();
 /**
  * REST service server implementation.
  *
@@ -48,37 +52,55 @@ class webservice_restful_server extends webservice_base_server
      *
      * @param string $authmethod authentication method of the web service (WEBSERVICE_AUTHMETHOD_PERMANENT_TOKEN, ...)
      */
+    
+    private $curl;
+    private $resp;
+    private $data_request;
+    
     public function __construct($authmethod)
     {
         parent::__construct($authmethod);
         $this->wsname = 'restful';
         $this->responseformat = 'json'; // Default to json.
         $this->requestformat = 'json'; // Default to json.
+        // /$this->curl = $curl;
     }
-    private function api_service_action()
+    //TODO: use multicurl  
+    private function api_service_action(Curl $curl)
     {
+        $this->curl = $curl;
         echo 'api_service_action ' . PHP_EOL . '<br>';
         echo $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]" . PHP_EOL . '<br>';
         $url_parts = explode('/', $actual_link);
         $last_url_part = count($url_parts) - 1;
         $name_function_for_moodle = $url_parts[$last_url_part];
-        $data_from_request = file_get_contents('php://input');
+        echo $name_function_for_moodle;
+        $this->data_request = file_get_contents('php://input');
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'POST':
                 echo 'POST';
-                print_r($data_from_request);
-                break;
+                //TODO: url
+                $this->resp = $this->curl->post('url');
+                return $this->resp;
             case 'PATCH':
                 echo 'PATCH';
-                print_r($data_from_request);
-                break;
+                //TODO: url
+                $this->resp = $this->curl->patch('url');
+                return $this->resp;
             case 'GET':
-                echo 'GET';
-                break;
+                echo 'GET'.'<br>';
+                //TODO: create checkToken function
+                foreach (getallheaders() as $name => $value) {
+                    echo "$name: $value.<br>";
+                }
+                //TODO: url
+                $this->resp = $this->curl->get('https://jsonplaceholder.typicode.com/todos/1');
+                return $this->resp;
             case 'DELETE':
-                echo 'DELETE';
-                print_r($data_from_request);
-                break;
+                echo 'DELETE'.'<br>';
+                //TODO: url
+                $this->resp = $curl->delete('url');
+                return $this->resp;
             default:
                 break;
         }
@@ -100,7 +122,6 @@ class webservice_restful_server extends webservice_base_server
                 $returnheaders[$key] = $value;
             }
         }
-
         return $returnheaders;
     }
 
@@ -278,7 +299,9 @@ class webservice_restful_server extends webservice_base_server
     public function run()
     {
         global $CFG, $SESSION;
-        $this->api_service_action();
+        //
+        $curl = new Curl();
+        $this->api_service_action($curl);
 
         // We will probably need a lot of memory in some functions.
         raise_memory_limit(MEMORY_EXTRA);
