@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+   <category>
+      <active>1</active>
+      <associations>
+         <categories>
+            <element>
+               <id null="true" />
+            </element>
+         </categories>
+         <products>
+            <element>
+               <id null="true" />
+            </element>
+         </products>
+      </associations>
+		 <link_rewrite>
+			<language id="1">test-url-in-english</language>
+			<language id="2">test-url-in-spanish</language>
+		</link_rewrite>
+		 <name>
+      <language id="1">root</language>
+    </name>
+      <description>6</description>
+      <id_parent>2</id_parent>
+      <id_shop_default>4</id_shop_default>
+      <is_root_category>1</is_root_category>
+      <link_rewrite>4</link_rewrite>
+      <meta_description>7</meta_description>
+      <meta_keywords>4</meta_keywords>
+      <meta_title>6</meta_title>
+      <name>
+		 </name>
+      <position>6</position>
+   </category>
+</root>
